@@ -61,8 +61,10 @@ The app opens at `http://localhost:8501`.
 5. Click **Load mock merchant: PASS**. Everything green: "Ready to activate."
 6. Close: "Every rule came directly from the existing QA checklist - we're not
    making judgement calls, just automating what's already documented."
+   <img width="1490" height="866" alt="image" src="https://github.com/user-attachments/assets/6c2b7a31-bdca-44ec-a272-6fbac8330013" />
 
-## What we'd ask Missy / Stephanie for next
+
+## Files required
 
 To go from prototype to pilot, we need a real example merchant:
 

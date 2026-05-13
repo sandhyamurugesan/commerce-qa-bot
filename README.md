@@ -40,8 +40,8 @@ Same logic, ~5 seconds per merchant instead of ~30 minutes.
 cd commerce-qa-bot
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run app.py
+pip3 install -r requirements.txt
+python3 -m streamlit run app.py
 ```
 
 The app opens at `http://localhost:8501`.

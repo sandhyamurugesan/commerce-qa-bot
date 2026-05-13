@@ -12,6 +12,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from ai_reviewer import generate_ai_review, generate_ai_review_structured
 from extractors import (
     extract_kyc,
     extract_payment_gateway,
@@ -154,6 +155,8 @@ pass_count = sum(1 for r in results if r.status == "PASS")
 fail_count = sum(1 for r in results if r.status == "FAIL")
 warn_count = sum(1 for r in results if r.status == "WARN")
 total = len(results)
+ai_review, ai_llm_text, ai_prompt = generate_ai_review_structured(workflow, facts, results)
+ai_brief, _ = generate_ai_review(workflow, facts, results)
 
 
 # -----------------------------------------------------------------------------
@@ -189,8 +192,9 @@ m4.metric("Warnings", warn_count)
 # Tabs: Checklist results | Side-by-side facts | Raw data
 # -----------------------------------------------------------------------------
 
-tab_checks, tab_facts, tab_raw, tab_download = st.tabs([
+tab_checks, tab_ai, tab_facts, tab_raw, tab_download = st.tabs([
     "Checklist results",
+    "AI review",
     "Side-by-side facts",
     "Raw extracted data",
     "Download QA report",
@@ -229,6 +233,81 @@ with tab_checks:
                 if r.checklist_ref:
                     st.caption(f"Checklist: _{r.checklist_ref}_")
                 st.markdown("---")
+
+
+with tab_ai:
+    st.markdown(
+        "AI-assisted comparison of the **setup / KYC document**, **Repay "
+        "configuration**, and **Commerce POS records** before the merchant is "
+        "flipped live."
+    )
+
+    rec = ai_review.recommendation
+    if rec == "READY":
+        st.success(f"### :white_check_mark:  Activation recommendation: **{rec}**\n\n{ai_review.headline}")
+    elif rec == "NOT READY":
+        st.error(f"### :x:  Activation recommendation: **{rec}**\n\n{ai_review.headline}")
+    else:
+        st.warning(f"### :warning:  Activation recommendation: **{rec}**\n\n{ai_review.headline}")
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Total checks", ai_review.counts.get("total", 0))
+    c2.metric("Passed", ai_review.counts.get("pass", 0))
+    c3.metric("Failed", ai_review.counts.get("fail", 0), delta_color="inverse")
+    c4.metric("Warnings", ai_review.counts.get("warn", 0), delta_color="off")
+
+    st.markdown("#### Why this recommendation")
+    st.markdown(ai_review.summary)
+
+    if ai_review.highest_risk:
+        st.markdown("#### :rotating_light: Highest-risk mismatches")
+        for item in ai_review.highest_risk:
+            with st.container(border=True):
+                st.markdown(f"**{item['label']}**")
+                cols = st.columns([1, 1, 1])
+                cols[0].markdown(
+                    f":green[**Expected**]<br><span style='font-size:0.95rem'>{item['expected']}</span>",
+                    unsafe_allow_html=True,
+                )
+                cols[1].markdown(
+                    f":red[**Actual**]<br><span style='font-size:0.95rem'>{item['actual']}</span>",
+                    unsafe_allow_html=True,
+                )
+                cols[2].markdown(
+                    f":blue[**Source(s)**]<br><span style='font-size:0.95rem'>{', '.join(item['sources'])}</span>",
+                    unsafe_allow_html=True,
+                )
+                if item.get("detail"):
+                    st.caption(f":grey[Detail:] {item['detail']}")
+                if item.get("checklist_ref"):
+                    st.caption(f":grey[Checklist:] _{item['checklist_ref']}_")
+
+    if ai_review.warnings:
+        st.markdown("#### :warning: Warnings to review")
+        for item in ai_review.warnings:
+            with st.container(border=True):
+                st.markdown(f"**{item['label']}**")
+                st.caption(f":grey[Detail:] {item['detail']}")
+                if item.get("sources"):
+                    st.caption(f":grey[Source(s):] {', '.join(item['sources'])}")
+
+    if ai_review.follow_up:
+        st.markdown("#### :clipboard: PaymentOps follow-up")
+        for step in ai_review.follow_up:
+            st.markdown(f"- **{step}**")
+
+    if ai_llm_text:
+        with st.expander(":sparkles: Live LLM narrative (from OpenAI)"):
+            st.markdown(ai_llm_text)
+
+    with st.expander("Show AI comparison packet / prompt"):
+        st.code(ai_prompt, language="text")
+
+    st.caption(
+        "Demo mode uses a structured local AI brief so the app works without API "
+        "keys. Set `OPENAI_API_KEY` to enable a live LLM review using the same "
+        "comparison packet."
+    )
 
 
 with tab_facts:
@@ -272,7 +351,7 @@ with tab_download:
         "Download the QA report as Excel - the analyst can attach this to the QA "
         "ticket today, no behavior change required."
     )
-    xlsx_bytes = build_excel_report(workflow, facts.display_name, results, facts)
+    xlsx_bytes = build_excel_report(workflow, facts.display_name, results, facts, ai_brief)
     st.download_button(
         "Download QA Report (Excel)",
         data=xlsx_bytes,

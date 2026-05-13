@@ -143,6 +143,7 @@ def build_excel_report(
     merchant_name: str,
     results: list[CheckResult],
     facts: MerchantFacts,
+    ai_brief: str = "",
 ) -> bytes:
     """Return an .xlsx file as bytes for Streamlit to serve."""
     buf = BytesIO()
@@ -169,6 +170,12 @@ def build_excel_report(
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         results_df.to_excel(writer, sheet_name="QA Results", index=False, startrow=4)
         facts_df.to_excel(writer, sheet_name="Facts", index=False)
+        if ai_brief:
+            pd.DataFrame({"AI Validation Brief": ai_brief.splitlines()}).to_excel(
+                writer,
+                sheet_name="AI Review",
+                index=False,
+            )
 
         wb = writer.book
         ws = writer.sheets["QA Results"]
@@ -202,5 +209,13 @@ def build_excel_report(
             ws_facts.cell(row=1, column=col_idx).font = Font(bold=True)
         for col, width in {"A": 32, "B": 35, "C": 35, "D": 35}.items():
             ws_facts.column_dimensions[col].width = width
+
+        if ai_brief:
+            ws_ai = writer.sheets["AI Review"]
+            ws_ai["A1"].font = Font(bold=True)
+            ws_ai.column_dimensions["A"].width = 120
+            for row in ws_ai.iter_rows():
+                for cell in row:
+                    cell.alignment = Alignment(wrap_text=True, vertical="top")
 
     return buf.getvalue()

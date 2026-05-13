@@ -1,0 +1,2 @@
+club_number,legal_name,dba_name,tin_last4,mcc_code,billing_descriptor,processor,transaction_type,card_types,omni_token_enabled,onboarding_status,org_code,owners,terminal_1_label,terminal_1_type,terminal_2_label,terminal_2_type
+1234,ABC Fitness Holdings LLC,ABC Fitness #1234,8821,7997,ABC*P 1234,Worldpay Core POS ON1061,Online Store,Visa;Mastercard;Discover;Amex OptBlue,true,Success,99000,Jane Doe|60;John Smith|40,ABC Fitness Club 1234 POS 1,POS,ABC Fitness Club 1234 MICO,MICO

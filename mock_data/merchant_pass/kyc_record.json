@@ -1,0 +1,31 @@
+{
+  "club_number": "1234",
+  "legal_name": "ABC Fitness Holdings LLC",
+  "dba_name": "ABC Fitness #1234",
+  "tin_last4": "8821",
+  "mcc_code": "7997",
+  "customer_service_phone": "501-555-0188",
+  "chargeback_email": "chargebacks@abcfitness1234.com",
+  "country": "US",
+  "client_type": "ABC PSP",
+  "card_types": ["Visa", "Mastercard", "Discover", "Amex OptBlue"],
+  "bank": {
+    "account_last4": "4419",
+    "transfer_method": "ACH",
+    "deposit_schedule": "Daily"
+  },
+  "rates": {
+    "transaction": 0.025,
+    "authorization": 0.10,
+    "misc": 0.05
+  },
+  "fees": {
+    "monthly": ["MNT01"],
+    "device": ["POS06", "POS07"],
+    "has_device_fees": true
+  },
+  "owners": [
+    {"name": "Jane Doe", "ownership_pct": 60.0, "phone": "501-555-0102"},
+    {"name": "John Smith", "ownership_pct": 40.0, "phone": "501-555-0103"}
+  ]
+}

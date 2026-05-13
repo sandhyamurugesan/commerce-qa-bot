@@ -1,0 +1,2 @@
+club_number,chargeback_email,customer_service_phone,bank_account_last4,transfer_method,deposit_schedule,rate_transaction,rate_authorization,rate_misc,monthly_fees,device_fees,cost_plus_enabled
+1234,chargebacks@abcfitness1234.com,501-555-0188,4419,Wire,Daily,0.025,0.10,0.05,MNT01,POS06;POS07,true

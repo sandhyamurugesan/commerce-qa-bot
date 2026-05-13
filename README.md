@@ -62,6 +62,8 @@ The app opens at `http://localhost:8501`.
 6. Close: "Every rule came directly from the existing QA checklist - we're not
    making judgement calls, just automating what's already documented."
    <img width="1490" height="866" alt="image" src="https://github.com/user-attachments/assets/6c2b7a31-bdca-44ec-a272-6fbac8330013" />
+<img width="1237" height="783" alt="image" src="https://github.com/user-attachments/assets/48c36f8c-c14f-4ef3-b16e-b17109fa4e2d" />
+<img width="1148" height="623" alt="image" src="https://github.com/user-attachments/assets/17a9f600-50de-44af-9ea1-b04c5f26eefd" />
 
 
 ## Files required
